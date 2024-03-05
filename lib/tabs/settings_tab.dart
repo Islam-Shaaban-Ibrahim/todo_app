@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_app/my_theme.dart';
 import 'package:todo_app/providers/settings_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -36,6 +37,10 @@ class _SettingsTabState extends State<SettingsTab> {
                   ?.copyWith(color: Colors.black),
             ),
             trailing: DropdownMenu(
+                trailingIcon: Icon(
+                  Icons.arrow_drop_down,
+                  size: 40,
+                ),
                 menuStyle: MenuStyle(
                     backgroundColor: MaterialStatePropertyAll<Color>(
                   provider.appTheme == ThemeMode.dark
@@ -85,7 +90,7 @@ class _SettingsTabState extends State<SettingsTab> {
               ),
               trailing: Switch(
                 value: provider.isDark,
-                activeColor: Theme.of(context).primaryColor,
+                activeColor: AppTheme.taskDarkColor,
                 onChanged: (value) {
                   if (value) {
                     provider.changeTheme(ThemeMode.dark);
