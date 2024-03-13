@@ -5,15 +5,16 @@ class AppTheme {
   static Color taskDarkColor = Color(0xff141922);
   static Color backgroundColor = Color(0xffDFECDB);
   static Color backgroundDarkColor = Color(0xff060E1E);
-  static Color blackColor = Color(0xff383838);
+  static Color blackColor = Color(0xff060E1E);
   static Color redColor = Color(0xffEC4B4B);
   static Color whiteColor = Color(0xffffffff);
   static Color greyColor = Color.fromARGB(255, 96, 97, 98);
   static ThemeData lightTheme = ThemeData(
     primaryColor: primaryColor,
-    scaffoldBackgroundColor: backgroundColor,
+    scaffoldBackgroundColor: Colors.transparent,
     appBarTheme: AppBarTheme(
-      color: primaryColor,
+      color: Colors.transparent,
+      elevation: 0,
     ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
         selectedItemColor: primaryColor, unselectedItemColor: greyColor),
@@ -27,9 +28,10 @@ class AppTheme {
   );
   static ThemeData darkTheme = ThemeData(
     primaryColor: primaryColor,
-    scaffoldBackgroundColor: backgroundDarkColor,
+    scaffoldBackgroundColor: Colors.transparent,
     appBarTheme: AppBarTheme(
-      color: primaryColor,
+      elevation: 0,
+      color: Colors.transparent,
     ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
         elevation: 0,
