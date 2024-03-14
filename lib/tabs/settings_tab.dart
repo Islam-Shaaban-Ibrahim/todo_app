@@ -5,6 +5,8 @@ import 'package:todo_app/providers/settings_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SettingsTab extends StatefulWidget {
+  const SettingsTab({super.key});
+
   @override
   State<SettingsTab> createState() => _SettingsTabState();
 }
@@ -20,16 +22,16 @@ class _SettingsTabState extends State<SettingsTab> {
           Container(
             decoration: BoxDecoration(
                 color: provider.appTheme == ThemeMode.dark
-                    ? Color.fromARGB(255, 177, 172, 172)
+                    ? const Color.fromARGB(255, 177, 172, 172)
                     : Colors.transparent,
                 border: Border.all(color: Colors.black)),
             margin: EdgeInsetsDirectional.only(
                 end: 5,
                 start: 5,
                 top: MediaQuery.of(context).size.height * 0.1),
-            padding: EdgeInsets.symmetric(horizontal: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             child: ListTile(
-              leading: Icon(
+              leading: const Icon(
                 Icons.language,
                 size: 30,
               ),
@@ -41,22 +43,22 @@ class _SettingsTabState extends State<SettingsTab> {
                     ?.copyWith(color: Colors.black),
               ),
               trailing: DropdownMenu(
-                  trailingIcon: Icon(
+                  trailingIcon: const Icon(
                     Icons.arrow_drop_down,
                     size: 40,
                   ),
                   menuStyle: MenuStyle(
                       backgroundColor: MaterialStatePropertyAll<Color>(
                     provider.appTheme == ThemeMode.dark
-                        ? Color.fromARGB(255, 177, 172, 172)
+                        ? const Color.fromARGB(255, 177, 172, 172)
                         : Colors.white,
                   )),
-                  textStyle: TextStyle(fontWeight: FontWeight.w900),
+                  textStyle: const TextStyle(fontWeight: FontWeight.w900),
                   initialSelection: provider.appLanguage,
                   onSelected: (value) {
                     provider.changeLanguage(value ??= "en");
                   },
-                  inputDecorationTheme: InputDecorationTheme(
+                  inputDecorationTheme: const InputDecorationTheme(
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(horizontal: 5)),
                   dropdownMenuEntries: [
@@ -72,16 +74,16 @@ class _SettingsTabState extends State<SettingsTab> {
           Container(
             decoration: BoxDecoration(
                 color: provider.appTheme == ThemeMode.dark
-                    ? Color.fromARGB(255, 177, 172, 172)
+                    ? const Color.fromARGB(255, 177, 172, 172)
                     : Colors.transparent,
                 border: Border.all(color: Colors.black)),
-            padding: EdgeInsets.symmetric(horizontal: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             margin: EdgeInsetsDirectional.symmetric(
               vertical: MediaQuery.of(context).size.height * 0.04,
               horizontal: 5,
             ),
             child: ListTile(
-                leading: Icon(
+                leading: const Icon(
                   Icons.mode_night_outlined,
                   size: 30,
                 ),

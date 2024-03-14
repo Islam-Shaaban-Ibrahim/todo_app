@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "846510068036",
+    "project_id": "todo-faacb",
+    "storage_bucket": "todo-faacb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:846510068036:android:e175f033c9e24efc800711",
+        "android_client_info": {
+          "package_name": "com.example.todo_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQniIuYRFdvVwyhrkBmiPSI5lmgpCgK1M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

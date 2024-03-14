@@ -10,6 +10,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class HomeScreen extends StatefulWidget {
   static const routeName = 'homeScreen';
 
+  const HomeScreen({super.key});
+
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -52,9 +54,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           bottomNavigationBar: BottomAppBar(
             notchMargin: 8,
-            padding: EdgeInsets.all(0),
+            padding: const EdgeInsets.all(0),
             clipBehavior: Clip.antiAliasWithSaveLayer,
-            shape: CircularNotchedRectangle(),
+            shape: const CircularNotchedRectangle(),
             child: BottomNavigationBar(
                 onTap: (index) {
                   selectedIndex = index;
@@ -63,13 +65,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 currentIndex: selectedIndex,
                 items: [
                   BottomNavigationBarItem(
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.list_outlined,
                         size: 26,
                       ),
                       label: AppLocalizations.of(context)!.tasks),
                   BottomNavigationBarItem(
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.settings,
                         size: 26,
                       ),
@@ -86,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {
               showTaskBottomSheet();
             },
-            child: Icon(Icons.add),
+            child: const Icon(Icons.add),
           ),
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerDocked,
@@ -102,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
             provider.isDark ? AppTheme.taskDarkColor : AppTheme.whiteColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         context: context,
-        builder: (context) => TaskBottomSheet());
+        builder: (context) => const TaskBottomSheet());
     setState(() {});
   }
 }
