@@ -3,20 +3,22 @@ import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/my_theme.dart';
 import 'package:todo_app/providers/settings_provider.dart';
+import 'package:todo_app/providers/task_provider.dart';
 
 class CalenderWidget extends StatefulWidget {
+  const CalenderWidget({super.key});
+
   @override
   State<CalenderWidget> createState() => _CalenderWidgetState();
 }
 
 class _CalenderWidgetState extends State<CalenderWidget> {
-  var selectedDate = DateTime.now();
-
   @override
   Widget build(BuildContext context) {
     var provider = Provider.of<SettingsProvider>(context);
+    var taskProvider = Provider.of<TaskProvider>(context);
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 13),
+      padding: const EdgeInsets.symmetric(horizontal: 13),
       child: EasyDateTimeLine(
         headerProps: EasyHeaderProps(
           showSelectedDate: false,
@@ -27,10 +29,10 @@ class _CalenderWidgetState extends State<CalenderWidget> {
                 ? Colors.white
                 : Colors.black,
           ),
-          padding: EdgeInsets.symmetric(vertical: 0),
+          padding: const EdgeInsets.symmetric(vertical: 0),
           monthPickerType: MonthPickerType.switcher,
         ),
-        initialDate: selectedDate,
+        initialDate: taskProvider.selectedDate,
         dayProps: EasyDayProps(
           activeDayStyle: DayStyle(
             monthStrStyle: TextStyle(
@@ -94,8 +96,7 @@ class _CalenderWidgetState extends State<CalenderWidget> {
           ),
         ),
         onDateChange: (newDate) {
-          selectedDate = newDate;
-          setState(() {});
+          taskProvider.changeSelectedDate(newDate);
         },
         locale: provider.appLanguage,
       ),

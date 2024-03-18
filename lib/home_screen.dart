@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+
 import 'package:provider/provider.dart';
 import 'package:todo_app/my_theme.dart';
 import 'package:todo_app/providers/settings_provider.dart';
+import 'package:todo_app/providers/task_provider.dart';
 import 'package:todo_app/tabs/settings_tab.dart';
 import 'package:todo_app/tabs/tasks_tabs/tasks_bottomSheet.dart';
 import 'package:todo_app/tabs/tasks_tabs/tasks_tab.dart';
@@ -10,18 +12,27 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class HomeScreen extends StatefulWidget {
   static const routeName = 'homeScreen';
 
+  const HomeScreen({super.key});
+
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<Widget> tabs = [TasksTab(), SettingsTab()];
+  List<Widget> tabs = [const TasksTab(), const SettingsTab()];
 
   int selectedIndex = 0;
+  bool firstRun = true;
 
   @override
   Widget build(BuildContext context) {
-    var provider = Provider.of<SettingsProvider>(context);
+    final provider = Provider.of<SettingsProvider>(context);
+    var taskProvider = Provider.of<TaskProvider>(context);
+    if (firstRun) {
+      taskProvider.getAllTasks();
+      provider.getAllPrefs();
+      firstRun = false;
+    }
     return Stack(
       alignment: Alignment.topCenter,
       children: [
@@ -52,28 +63,30 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           bottomNavigationBar: BottomAppBar(
             notchMargin: 8,
-            padding: EdgeInsets.all(0),
+            padding: const EdgeInsets.all(0),
             clipBehavior: Clip.antiAliasWithSaveLayer,
-            shape: CircularNotchedRectangle(),
+            shape: const CircularNotchedRectangle(),
             child: BottomNavigationBar(
+                showSelectedLabels: false,
+                showUnselectedLabels: false,
                 onTap: (index) {
                   selectedIndex = index;
                   setState(() {});
                 },
                 currentIndex: selectedIndex,
-                items: [
+                items: const [
                   BottomNavigationBarItem(
                       icon: Icon(
                         Icons.list_outlined,
-                        size: 26,
+                        size: 38,
                       ),
-                      label: AppLocalizations.of(context)!.tasks),
+                      label: ''),
                   BottomNavigationBarItem(
                       icon: Icon(
                         Icons.settings,
-                        size: 26,
+                        size: 30,
                       ),
-                      label: AppLocalizations.of(context)!.settings)
+                      label: '')
                 ]),
           ),
           floatingActionButton: FloatingActionButton(
@@ -86,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {
               showTaskBottomSheet();
             },
-            child: Icon(Icons.add),
+            child: const Icon(Icons.add),
           ),
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerDocked,
@@ -96,13 +109,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void showTaskBottomSheet() {
-    var provider = Provider.of<SettingsProvider>(context, listen: false);
+    final provider = Provider.of<SettingsProvider>(context, listen: false);
     showModalBottomSheet(
         backgroundColor:
             provider.isDark ? AppTheme.taskDarkColor : AppTheme.whiteColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         context: context,
-        builder: (context) => TaskBottomSheet());
+        builder: (context) => const TaskBottomSheet());
     setState(() {});
   }
 }
