@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/firebase_utils.dart';
@@ -136,9 +137,18 @@ class _TaskBottomSheetState extends State<TaskBottomSheet> {
                 FireBaseUtils.addTaskToFireStore(task).timeout(
                   const Duration(milliseconds: 100),
                   onTimeout: () {
-                    taskProvider.getAllTasksFromFireStore();
+                    Fluttertoast.showToast(
+                      msg: "Task Added successfully",
+                      toastLength: Toast.LENGTH_SHORT,
+                    );
+                    taskProvider.getAllTasks();
                   },
-                ).catchError((e) {});
+                ).catchError((e) {
+                  Fluttertoast.showToast(
+                    msg: "Something Went Wrong !!",
+                    toastLength: Toast.LENGTH_SHORT,
+                  );
+                });
 
                 Navigator.of(context).pop();
               },
@@ -164,7 +174,9 @@ class _TaskBottomSheetState extends State<TaskBottomSheet> {
         context: context,
         firstDate: DateTime.now(),
         lastDate: DateTime.now().add(const Duration(days: 365)));
+
     selectedDate = chosenDate ?? selectedDate;
+
     setState(() {});
   }
 }

@@ -7,11 +7,15 @@ import 'package:todo_app/my_theme.dart';
 import 'package:todo_app/providers/settings_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:todo_app/providers/task_provider.dart';
+import 'package:todo_app/task_edit_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await FirebaseFirestore.instance.disableNetwork();
+  FirebaseFirestore.instance.settings =
+      const Settings(cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED);
+
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider<SettingsProvider>(
@@ -23,18 +27,10 @@ void main() async {
 }
 
 class TodoApp extends StatelessWidget {
-  bool firstRun = true;
-
-  TodoApp({super.key});
+  const TodoApp({super.key});
   @override
   Widget build(BuildContext context) {
     var provider = Provider.of<SettingsProvider>(context);
-    var taskProvider = Provider.of<TaskProvider>(context);
-    if (firstRun) {
-      taskProvider.getAllTasksFromFireStore();
-      provider.getAllPrefs();
-      firstRun = false;
-    }
 
     return MaterialApp(
       theme: AppTheme.lightTheme,
@@ -42,6 +38,7 @@ class TodoApp extends StatelessWidget {
       initialRoute: HomeScreen.routeName,
       routes: {
         HomeScreen.routeName: (context) => const HomeScreen(),
+        TaskEdit.routeName: (context) => const TaskEdit(),
       },
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,

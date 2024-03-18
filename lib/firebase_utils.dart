@@ -16,6 +16,12 @@ class FireBaseUtils {
     return docs.set(task);
   }
 
+  static Future<List<Task>> getAllTasksFromFireBase() async {
+    final tasksCollection = FireBaseUtils.getTasksCollection();
+    final querySnapshot = await tasksCollection.get();
+    return querySnapshot.docs.map((doc) => doc.data()).toList();
+  }
+
   static Future<void> deleteTaskFromFireBase(Task task) {
     final collRef = getTasksCollection();
     return collRef.doc(task.id).delete();

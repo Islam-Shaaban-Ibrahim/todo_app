@@ -6,6 +6,8 @@ import 'package:todo_app/providers/settings_provider.dart';
 import 'package:todo_app/providers/task_provider.dart';
 
 class CalenderWidget extends StatefulWidget {
+  const CalenderWidget({super.key});
+
   @override
   State<CalenderWidget> createState() => _CalenderWidgetState();
 }
