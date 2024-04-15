@@ -1,7 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
+import 'package:todo_app/auth/login/login_screen.dart';
 import 'package:todo_app/my_theme.dart';
+import 'package:todo_app/providers/auth_provider.dart';
 import 'package:todo_app/providers/settings_provider.dart';
 import 'package:todo_app/providers/task_provider.dart';
 import 'package:todo_app/tabs/settings_tab.dart';
@@ -19,20 +23,21 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<Widget> tabs = [const TasksTab(), const SettingsTab()];
-
   int selectedIndex = 0;
   bool firstRun = true;
-
+  List<Widget> tabs = [const TasksTab(), const SettingsTab()];
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<SettingsProvider>(context);
-    var taskProvider = Provider.of<TaskProvider>(context);
+    final taskProvider = Provider.of<TaskProvider>(context);
+    final authProvider = Provider.of<AuthProviders>(context);
+
     if (firstRun) {
-      taskProvider.getAllTasks();
-      provider.getAllPrefs();
+      taskProvider.getAllTasks(authProvider.currentUser!.id);
+      // provider.getAllPrefs();
       firstRun = false;
     }
+
     return Stack(
       alignment: Alignment.topCenter,
       children: [
@@ -51,11 +56,25 @@ class _HomeScreenState extends State<HomeScreen> {
         Scaffold(
           body: tabs[selectedIndex],
           appBar: AppBar(
+            actions: [
+              IconButton(
+                onPressed: () {
+                  provider.changeLoginStatus();
+
+                  taskProvider.tasks = [];
+
+                  Navigator.of(context)
+                      .pushReplacementNamed(LoginScreen.routeName);
+                },
+                icon: Icon(Icons.logout),
+              )
+            ],
             title: Padding(
               padding: const EdgeInsetsDirectional.only(start: 20),
               child: Text(
                 selectedIndex == 0
-                    ? AppLocalizations.of(context)!.todoList
+                    ? AppLocalizations.of(context)!.todoList +
+                        "    - ${authProvider.currentUser!.name} -"
                     : AppLocalizations.of(context)!.settings,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
@@ -90,6 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ]),
           ),
           floatingActionButton: FloatingActionButton(
+            splashColor: Colors.transparent,
             shape: CircleBorder(
                 side: BorderSide(
                     width: 4,
@@ -103,19 +123,26 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerDocked,
-        )
+        ),
       ],
     );
   }
 
-  void showTaskBottomSheet() {
+  void showTaskBottomSheet() async {
     final provider = Provider.of<SettingsProvider>(context, listen: false);
-    showModalBottomSheet(
+    await showModalBottomSheet(
+        isScrollControlled: true,
+        enableDrag: true,
         backgroundColor:
             provider.isDark ? AppTheme.taskDarkColor : AppTheme.whiteColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         context: context,
-        builder: (context) => const TaskBottomSheet());
+        builder: (context) => Padding(
+              padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).viewInsets.top,
+                  bottom: MediaQuery.of(context).viewInsets.bottom),
+              child: const TaskBottomSheet(),
+            ));
     setState(() {});
   }
 }

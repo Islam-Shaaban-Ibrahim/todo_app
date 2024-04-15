@@ -11,23 +11,26 @@ class AppTheme {
   static Color greyColor = const Color.fromARGB(255, 96, 97, 98);
   static Color greenColor = const Color(0xff61E757);
   static ThemeData lightTheme = ThemeData(
-    bottomAppBarTheme: const BottomAppBarTheme(
-      color: Colors.transparent,
-      elevation: 0,
-    ),
+    shadowColor: Colors.transparent,
+    splashFactory: InkRipple.splashFactory,
+    splashColor: Colors.transparent,
+    highlightColor: Colors.transparent,
     primaryColor: primaryColor,
     scaffoldBackgroundColor: Colors.transparent,
     appBarTheme: AppBarTheme(
+      scrolledUnderElevation: 0,
       iconTheme: IconThemeData(color: whiteColor),
       color: Colors.transparent,
       elevation: 0,
     ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        elevation: 15,
+        enableFeedback: false,
         selectedItemColor: primaryColor,
         unselectedItemColor: greyColor),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: primaryColor, foregroundColor: whiteColor),
+        enableFeedback: false,
+        backgroundColor: primaryColor,
+        foregroundColor: whiteColor),
     textTheme: TextTheme(
       // appBar theme
       titleLarge: TextStyle(
@@ -35,24 +38,26 @@ class AppTheme {
     ),
   );
   static ThemeData darkTheme = ThemeData(
-    bottomAppBarTheme: const BottomAppBarTheme(
-      color: Colors.transparent,
-      elevation: 0,
-    ),
+    splashFactory: InkRipple.splashFactory,
+    splashColor: Colors.transparent,
+    highlightColor: Colors.transparent,
     primaryColor: primaryColor,
     scaffoldBackgroundColor: Colors.transparent,
     appBarTheme: AppBarTheme(
+      scrolledUnderElevation: 0,
       iconTheme: IconThemeData(color: blackColor),
       elevation: 0,
       color: Colors.transparent,
     ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        elevation: 10,
+        enableFeedback: false,
         backgroundColor: taskDarkColor,
         selectedItemColor: primaryColor,
         unselectedItemColor: greyColor),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: primaryColor, foregroundColor: whiteColor),
+        enableFeedback: false,
+        backgroundColor: primaryColor,
+        foregroundColor: whiteColor),
     textTheme: TextTheme(
       // appBar theme
       titleLarge: TextStyle(
