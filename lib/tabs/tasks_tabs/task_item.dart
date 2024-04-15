@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:todo_app/firebase_utils.dart';
 import 'package:todo_app/model/task.dart';
 import 'package:todo_app/my_theme.dart';
+import 'package:todo_app/providers/auth_provider.dart';
 import 'package:todo_app/providers/settings_provider.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:todo_app/providers/task_provider.dart';
@@ -18,6 +19,7 @@ class TaskItem extends StatefulWidget {
 }
 
 class _TaskItemState extends State<TaskItem> {
+  bool isDone = false;
   @override
   Widget build(BuildContext context) {
     return widget.task.isDone == true ? showDoneTask() : showNotDoneTask();
@@ -26,7 +28,8 @@ class _TaskItemState extends State<TaskItem> {
   Widget showNotDoneTask() {
     var provider = Provider.of<SettingsProvider>(context);
     var taskProvider = Provider.of<TaskProvider>(context);
-    return InkWell(
+    final authProvider = Provider.of<AuthProviders>(context);
+    return GestureDetector(
       onTap: () {
         Navigator.of(context)
             .pushNamed(TaskEdit.routeName, arguments: widget.task);
@@ -42,14 +45,15 @@ class _TaskItemState extends State<TaskItem> {
               SlidableAction(
                 borderRadius: BorderRadius.circular(15),
                 onPressed: (context) {
-                  FireBaseUtils.deleteTaskFromFireBase(widget.task).timeout(
-                      const Duration(microseconds: 100), onTimeout: () {
+                  FireBaseUtils.deleteTaskFromFireBase(
+                          widget.task, authProvider.currentUser!.id)
+                      .timeout(Duration(microseconds: 20), onTimeout: () {
+                    taskProvider.getAllTasks(authProvider.currentUser!.id);
                     Fluttertoast.showToast(
                       msg: "Task Deleted successfully",
                       toastLength: Toast.LENGTH_SHORT,
                     );
-                    taskProvider.getAllTasks();
-                  }).catchError((e) {
+                  }).catchError((onError) {
                     Fluttertoast.showToast(
                       msg: "Something Went Wrong!",
                       toastLength: Toast.LENGTH_SHORT,
@@ -64,6 +68,7 @@ class _TaskItemState extends State<TaskItem> {
             ],
           ),
           child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 10),
             decoration: BoxDecoration(
                 color: provider.appTheme == ThemeMode.light
                     ? Colors.white
@@ -81,37 +86,49 @@ class _TaskItemState extends State<TaskItem> {
                   height: MediaQuery.of(context).size.height * 0.073,
                 ),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        widget.task.title,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleLarge
-                            ?.copyWith(color: AppTheme.primaryColor),
-                      ),
-                      Text(
-                        widget.task.description,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium
-                            ?.copyWith(
-                                color: provider.isDark
-                                    ? AppTheme.whiteColor
-                                    : AppTheme.blackColor),
-                      )
-                    ],
+                  child: Padding(
+                    padding: const EdgeInsetsDirectional.only(end: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          widget.task.title.trim(),
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleLarge
+                              ?.copyWith(color: AppTheme.primaryColor),
+                        ),
+                        Expanded(
+                          child: Text(
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            widget.task.description.trim(),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                    color: provider.isDark
+                                        ? AppTheme.whiteColor
+                                        : AppTheme.blackColor),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
                 InkWell(
                   onTap: () {
-                    final colRef = FireBaseUtils.getTasksCollection();
-                    colRef.doc(widget.task.id).update({"isDone": true}).timeout(
-                        const Duration(milliseconds: 100), onTimeout: () {
-                      taskProvider.getAllTasks();
-                    }).catchError((e) {
+                    isDone = !isDone;
+
+                    final colRef = FireBaseUtils.getTasksCollection(
+                        authProvider.currentUser!.id);
+                    colRef
+                        .doc(widget.task.id)
+                        .update({"isDone": isDone}).timeout(
+                            Duration(microseconds: 20), onTimeout: () {
+                      taskProvider.getAllTasks(authProvider.currentUser!.id);
+                    }).catchError((onError) {
                       Fluttertoast.showToast(
                         msg: "Something Went Wrong!",
                         toastLength: Toast.LENGTH_SHORT,
@@ -144,6 +161,8 @@ class _TaskItemState extends State<TaskItem> {
   Widget showDoneTask() {
     var provider = Provider.of<SettingsProvider>(context);
     var taskProvider = Provider.of<TaskProvider>(context);
+    final authProvider = Provider.of<AuthProviders>(context);
+    FireBaseUtils.readUserFromFireBase(authProvider.currentUser!.id);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       child: Slidable(
@@ -155,14 +174,15 @@ class _TaskItemState extends State<TaskItem> {
             SlidableAction(
               borderRadius: BorderRadius.circular(15),
               onPressed: (context) {
-                FireBaseUtils.deleteTaskFromFireBase(widget.task)
-                    .timeout(const Duration(microseconds: 100), onTimeout: () {
+                FireBaseUtils.deleteTaskFromFireBase(
+                        widget.task, authProvider.currentUser!.id)
+                    .timeout(Duration(microseconds: 20), onTimeout: () {
+                  taskProvider.getAllTasks(authProvider.currentUser!.id);
                   Fluttertoast.showToast(
                     msg: "Task Deleted successfully",
                     toastLength: Toast.LENGTH_SHORT,
                   );
-                  taskProvider.getAllTasks();
-                }).catchError((e) {
+                }).catchError((onError) {
                   Fluttertoast.showToast(
                     msg: "Something Went Wrong!",
                     toastLength: Toast.LENGTH_SHORT,
@@ -177,6 +197,7 @@ class _TaskItemState extends State<TaskItem> {
           ],
         ),
         child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
               color: provider.appTheme == ThemeMode.light
                   ? Colors.white
@@ -194,23 +215,32 @@ class _TaskItemState extends State<TaskItem> {
                 height: MediaQuery.of(context).size.height * 0.073,
               ),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      widget.task.title,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge
-                          ?.copyWith(color: AppTheme.greenColor),
-                    ),
-                    Text(widget.task.description,
+                child: Padding(
+                  padding: const EdgeInsetsDirectional.only(end: 5),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        widget.task.title.trim(),
                         style: Theme.of(context)
                             .textTheme
-                            .titleMedium
-                            ?.copyWith(color: AppTheme.greenColor))
-                  ],
+                            .titleLarge
+                            ?.copyWith(color: AppTheme.greenColor),
+                      ),
+                      Expanded(
+                        child: Text(
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          widget.task.description.trim(),
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium
+                              ?.copyWith(color: AppTheme.greenColor),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
               Container(
@@ -221,12 +251,31 @@ class _TaskItemState extends State<TaskItem> {
                   borderRadius: BorderRadius.circular(15),
                   color: Colors.transparent,
                 ),
-                child: Text(
-                  "Done!",
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(color: AppTheme.greenColor),
+                child: InkWell(
+                  onTap: () {
+                    isDone = !isDone;
+
+                    final colRef = FireBaseUtils.getTasksCollection(
+                        authProvider.currentUser!.id);
+                    colRef
+                        .doc(widget.task.id)
+                        .update({"isDone": isDone}).timeout(
+                            Duration(microseconds: 20), onTimeout: () {
+                      taskProvider.getAllTasks(authProvider.currentUser!.id);
+                    }).catchError((onError) {
+                      Fluttertoast.showToast(
+                        msg: "Something Went Wrong!",
+                        toastLength: Toast.LENGTH_SHORT,
+                      );
+                    });
+                  },
+                  child: Text(
+                    "Done !",
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(color: AppTheme.greenColor),
+                  ),
                 ),
               ),
             ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/my_theme.dart';
+import 'package:todo_app/providers/auth_provider.dart';
 import 'package:todo_app/providers/settings_provider.dart';
 import 'package:todo_app/providers/task_provider.dart';
 
@@ -17,6 +18,7 @@ class _CalenderWidgetState extends State<CalenderWidget> {
   Widget build(BuildContext context) {
     var provider = Provider.of<SettingsProvider>(context);
     var taskProvider = Provider.of<TaskProvider>(context);
+    final authProvider = Provider.of<AuthProviders>(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 13),
       child: EasyDateTimeLine(
@@ -96,7 +98,8 @@ class _CalenderWidgetState extends State<CalenderWidget> {
           ),
         ),
         onDateChange: (newDate) {
-          taskProvider.changeSelectedDate(newDate);
+          taskProvider.changeSelectedDate(
+              newDate, authProvider.currentUser!.id);
         },
         locale: provider.appLanguage,
       ),

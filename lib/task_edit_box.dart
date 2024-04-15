@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/firebase_utils.dart';
 import 'package:todo_app/model/task.dart';
 import 'package:todo_app/my_theme.dart';
+import 'package:todo_app/providers/auth_provider.dart';
 import 'package:todo_app/providers/settings_provider.dart';
 import 'package:todo_app/providers/task_provider.dart';
 
@@ -23,8 +25,10 @@ class _TaskEditBoxState extends State<TaskEditBox> {
   @override
   Widget build(BuildContext context) {
     var args = ModalRoute.of(context)?.settings.arguments as Task;
+
     var provider = Provider.of<SettingsProvider>(context);
     var taskProvider = Provider.of<TaskProvider>(context);
+    final authProvider = Provider.of<AuthProviders>(context);
     return Center(
       child: Form(
         key: formKey,
@@ -60,7 +64,7 @@ class _TaskEditBoxState extends State<TaskEditBox> {
                           ? AppTheme.whiteColor
                           : AppTheme.blackColor),
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
+                    if (value == null || value.trim().isEmpty) {
                       return 'INVALID INPUT';
                     }
                     return null;
@@ -74,6 +78,9 @@ class _TaskEditBoxState extends State<TaskEditBox> {
                             : AppTheme.blackColor),
                   )),
               TextFormField(
+                inputFormatters: [
+                  LengthLimitingTextInputFormatter(150),
+                ],
                 initialValue: args.description,
                 onChanged: (value) {
                   args.description = value;
@@ -83,7 +90,7 @@ class _TaskEditBoxState extends State<TaskEditBox> {
                         ? AppTheme.whiteColor
                         : AppTheme.blackColor),
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (value == null || value.trim().isEmpty) {
                     return 'INVALID INPUT';
                   }
                   return null;
@@ -96,7 +103,7 @@ class _TaskEditBoxState extends State<TaskEditBox> {
                           ? AppTheme.whiteColor
                           : AppTheme.blackColor),
                 ),
-                maxLines: 4,
+                maxLines: 3,
               ),
               const SizedBox(
                 height: 15,
@@ -130,7 +137,7 @@ class _TaskEditBoxState extends State<TaskEditBox> {
                 ),
               ),
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.04,
+                height: MediaQuery.of(context).size.height * 0.03,
               ),
               ElevatedButton(
                 style: ButtonStyle(
@@ -138,26 +145,26 @@ class _TaskEditBoxState extends State<TaskEditBox> {
                         const EdgeInsets.symmetric(vertical: 12)),
                     backgroundColor:
                         MaterialStatePropertyAll(AppTheme.primaryColor)),
-                onPressed: () async {
-                  if (!formKey.currentState!.validate()) {
+                onPressed: () {
+                  if (formKey.currentState?.validate() == false) {
                     return;
                   }
-                  final colRef = FireBaseUtils.getTasksCollection();
-                  await colRef.doc(args.id).update({
+
+                  final colRef = FireBaseUtils.getTasksCollection(
+                      authProvider.currentUser!.id);
+                  colRef.doc(args.id).update({
                     "title": args.title,
                     "description": args.description,
                     "dateTime": args.dateTime
-                  }).timeout(
-                    const Duration(microseconds: 10),
-                    onTimeout: () {
-                      Fluttertoast.showToast(
-                        msg: "Task Edited successfully",
-                        toastLength: Toast.LENGTH_SHORT,
-                      );
-                      taskProvider.getAllTasks();
-                      Navigator.pop(context);
-                    },
-                  ).catchError((e) {
+                  }).timeout(Duration(microseconds: 10), onTimeout: () {
+                    Navigator.pop(context);
+                    taskProvider.getAllTasks(authProvider.currentUser!.id);
+                    Fluttertoast.showToast(
+                      msg: "Task Edited successfully",
+                      toastLength: Toast.LENGTH_SHORT,
+                    );
+                  }).catchError((onError) {
+                    Navigator.pop(context);
                     Fluttertoast.showToast(
                       msg: "Something Went Wrong!",
                       toastLength: Toast.LENGTH_SHORT,

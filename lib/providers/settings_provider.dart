@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsProvider with ChangeNotifier {
+  bool isLoggedIn = false;
   String appLanguage = 'en';
   ThemeMode appTheme = ThemeMode.light;
   bool isDark = false;
@@ -20,8 +21,19 @@ class SettingsProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void changeLoginStatus() async {
+    var pref = await SharedPreferences.getInstance();
+    isLoggedIn = !isLoggedIn;
+    pref.setBool("log", isLoggedIn);
+    notifyListeners();
+  }
+
   void getAllPrefs() async {
     var pref = await SharedPreferences.getInstance();
+    if (pref.getBool("log") != null) {
+      isLoggedIn = pref.getBool("log")!;
+      print("${isLoggedIn}====ffff");
+    }
     if (pref.getString("lang") != null) {
       appLanguage = pref.getString("lang")!;
     }
@@ -34,6 +46,7 @@ class SettingsProvider with ChangeNotifier {
         isDark = false;
       }
     }
+
     notifyListeners();
   }
 }

@@ -5,8 +5,8 @@ import 'package:todo_app/model/task.dart';
 class TaskProvider with ChangeNotifier {
   List<Task> tasks = [];
   DateTime selectedDate = DateTime.now();
-  void getAllTasks() async {
-    final allTasks = await FireBaseUtils.getAllTasksFromFireBase();
+  void getAllTasks(String uid) async {
+    final allTasks = await FireBaseUtils.getAllTasksFromFireBase(uid);
 
     tasks = allTasks
         .where((task) =>
@@ -23,8 +23,8 @@ class TaskProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void changeSelectedDate(DateTime newSelectedDate) {
+  void changeSelectedDate(DateTime newSelectedDate, String uid) {
     selectedDate = newSelectedDate;
-    getAllTasks();
+    getAllTasks(uid);
   }
 }
