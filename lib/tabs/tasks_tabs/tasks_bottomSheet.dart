@@ -29,6 +29,7 @@ class _TaskBottomSheetState extends State<TaskBottomSheet> {
     var provider = Provider.of<SettingsProvider>(context);
     var taskProvider = Provider.of<TaskProvider>(context);
     final authProvider = Provider.of<AuthProviders>(context);
+    selectedDate = taskProvider.selectedDate;
 
     return Form(
       key: formKey,
