@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:provider/provider.dart';
 import 'package:todo_app/auth/login/login_screen.dart';
 import 'package:todo_app/my_theme.dart';
@@ -24,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int selectedIndex = 0;
   bool firstRun = true;
   List<Widget> tabs = [const TasksTab(), const SettingsTab()];
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<SettingsProvider>(context);
@@ -32,7 +32,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (firstRun) {
       taskProvider.getAllTasks(authProvider.currentUser!.id);
-
       firstRun = false;
     }
 
@@ -64,15 +63,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   Navigator.of(context)
                       .pushReplacementNamed(LoginScreen.routeName);
                 },
-                icon: Icon(Icons.logout),
+                icon: const Icon(Icons.logout),
               )
             ],
             title: Padding(
               padding: const EdgeInsetsDirectional.only(start: 20),
               child: Text(
                 selectedIndex == 0
-                    ? AppLocalizations.of(context)!.todoList +
-                        "    - ${authProvider.currentUser!.name} -"
+                    ? "${AppLocalizations.of(context)!.todoList}    - ${authProvider.currentUser!.name} -"
                     : AppLocalizations.of(context)!.settings,
                 style: Theme.of(context).textTheme.titleLarge,
               ),

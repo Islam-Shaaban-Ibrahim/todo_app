@@ -41,13 +41,12 @@ class _TaskItemState extends State<TaskItem> {
             extentRatio: 0.25,
             motion: const DrawerMotion(),
             children: [
-              // A SlidableAction can have an icon and/or a label.
               SlidableAction(
                 borderRadius: BorderRadius.circular(15),
                 onPressed: (context) {
                   FireBaseUtils.deleteTaskFromFireBase(
                           widget.task, authProvider.currentUser!.id)
-                      .timeout(Duration(microseconds: 20), onTimeout: () {
+                      .timeout(const Duration(microseconds: 20), onTimeout: () {
                     taskProvider.getAllTasks(authProvider.currentUser!.id);
                     Fluttertoast.showToast(
                       msg: "Task Deleted successfully",
@@ -126,7 +125,7 @@ class _TaskItemState extends State<TaskItem> {
                     colRef
                         .doc(widget.task.id)
                         .update({"isDone": isDone}).timeout(
-                            Duration(microseconds: 20), onTimeout: () {
+                            const Duration(microseconds: 20), onTimeout: () {
                       taskProvider.getAllTasks(authProvider.currentUser!.id);
                     }).catchError((onError) {
                       Fluttertoast.showToast(
@@ -170,13 +169,12 @@ class _TaskItemState extends State<TaskItem> {
           extentRatio: 0.25,
           motion: const DrawerMotion(),
           children: [
-            // A SlidableAction can have an icon and/or a label.
             SlidableAction(
               borderRadius: BorderRadius.circular(15),
               onPressed: (context) {
                 FireBaseUtils.deleteTaskFromFireBase(
                         widget.task, authProvider.currentUser!.id)
-                    .timeout(Duration(microseconds: 20), onTimeout: () {
+                    .timeout(const Duration(microseconds: 20), onTimeout: () {
                   taskProvider.getAllTasks(authProvider.currentUser!.id);
                   Fluttertoast.showToast(
                     msg: "Task Deleted successfully",
@@ -260,7 +258,7 @@ class _TaskItemState extends State<TaskItem> {
                     colRef
                         .doc(widget.task.id)
                         .update({"isDone": isDone}).timeout(
-                            Duration(microseconds: 20), onTimeout: () {
+                            const Duration(microseconds: 20), onTimeout: () {
                       taskProvider.getAllTasks(authProvider.currentUser!.id);
                     }).catchError((onError) {
                       Fluttertoast.showToast(

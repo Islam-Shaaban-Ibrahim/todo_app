@@ -1,19 +1,13 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/auth/custom_text_form_field.dart';
 import 'package:todo_app/auth/register/register_navigator.dart';
 import 'package:todo_app/auth/register/register_screen_view_model.dart';
 import 'package:todo_app/dialog_utils.dart';
-import 'package:todo_app/firebase_utils.dart';
-import 'package:todo_app/home_screen.dart';
-import 'package:todo_app/model/my_user.dart';
 import 'package:todo_app/my_theme.dart';
-import 'package:todo_app/providers/auth_provider.dart';
-import 'package:todo_app/providers/settings_provider.dart';
 
 class RegisterScreen extends StatefulWidget {
-  RegisterScreen({super.key});
+  const RegisterScreen({super.key});
   static const routeName = 'register';
 
   @override
@@ -22,18 +16,11 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen>
     implements RegisterNavigator {
-  final formKey = GlobalKey<FormState>();
-
-  final emailController = TextEditingController();
-
-  final nameController = TextEditingController();
-
-  final passwordController = TextEditingController();
   final viewModel = RegisterScreenVm();
   @override
   void initState() {
-    // TODO: implement initState
     viewModel.navigator = this;
+    viewModel.context = context;
     super.initState();
   }
 
@@ -64,7 +51,7 @@ class _RegisterScreenState extends State<RegisterScreen>
               ),
             ),
             body: Form(
-              key: formKey,
+              key: viewModel.formKey,
               child: Padding(
                 padding: const EdgeInsets.all(10),
                 child: Column(
@@ -76,7 +63,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                     Column(
                       children: [
                         CustomTextFormField(
-                            controller: nameController,
+                            controller: viewModel.nameController,
                             validator: (value) {
                               if (value == null || value.trim().isEmpty) {
                                 return "INVALID INPUT";
@@ -88,7 +75,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                           height: MediaQuery.of(context).size.height * 0.02,
                         ),
                         CustomTextFormField(
-                            controller: emailController,
+                            controller: viewModel.emailController,
                             validator: (value) {
                               if (value == null || value.trim().isEmpty) {
                                 return "INVALID INPUT";
@@ -101,7 +88,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                         ),
                         CustomTextFormField(
                             obscureText: true,
-                            controller: passwordController,
+                            controller: viewModel.passwordController,
                             validator: (value) {
                               if (value == null || value.trim().isEmpty) {
                                 return "INVALID INPUT";
@@ -116,7 +103,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                     ),
                     GestureDetector(
                       onTap: () {
-                        register();
+                        viewModel.register();
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
@@ -149,13 +136,6 @@ class _RegisterScreenState extends State<RegisterScreen>
     );
   }
 
-  void register() async {
-    if (formKey.currentState?.validate() == false) {
-      return;
-    }
-    viewModel.register(emailController.text, passwordController.text);
-  }
-
   @override
   void hideLoading() {
     DialogUtils.hideLoading(context: context);
@@ -163,11 +143,18 @@ class _RegisterScreenState extends State<RegisterScreen>
 
   @override
   void showLoading() {
-    DialogUtils.showLoading(context: context, actionName: 'Loading.....');
+    DialogUtils.showLoading(
+        context: context, actionName: 'Loading.....', isDismissible: false);
   }
 
   @override
   void showMessage(String message) {
-    DialogUtils.showMessage(context: context, message: message);
+    DialogUtils.showMessage(
+      context: context,
+      message: message,
+      isDismissible: false,
+      title: "Error",
+      negAction: "Cancel",
+    );
   }
 }

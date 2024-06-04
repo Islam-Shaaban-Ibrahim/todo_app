@@ -13,7 +13,6 @@ class DialogUtils {
         builder: (context) {
           return AlertDialog(
             content: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 CircularProgressIndicator(
