@@ -32,7 +32,6 @@ class SettingsProvider with ChangeNotifier {
     var pref = await SharedPreferences.getInstance();
     if (pref.getBool("log") != null) {
       isLoggedIn = pref.getBool("log")!;
-      print("${isLoggedIn}====ffff");
     }
     if (pref.getString("lang") != null) {
       appLanguage = pref.getString("lang")!;

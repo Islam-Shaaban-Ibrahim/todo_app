@@ -1,30 +1,32 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:todo_app/auth/custom_text_form_field.dart';
+import 'package:todo_app/auth/login/login_navigator.dart';
+import 'package:todo_app/auth/login/login_screen_view_model.dart';
 import 'package:todo_app/auth/register/register_screen.dart';
 import 'package:todo_app/dialog_utils.dart';
-import 'package:todo_app/firebase_utils.dart';
-import 'package:todo_app/home_screen.dart';
-import 'package:todo_app/model/my_user.dart';
 import 'package:todo_app/my_theme.dart';
-import 'package:todo_app/providers/auth_provider.dart';
-import 'package:todo_app/providers/settings_provider.dart';
 
 class LoginScreen extends StatefulWidget {
-  LoginScreen({super.key});
+  const LoginScreen({super.key});
   static const routeName = 'login';
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen> implements LoginNavigator {
   final formKey = GlobalKey<FormState>();
 
   final emailController = TextEditingController();
 
   final passwordController = TextEditingController();
+  final viewModel = LoginScreenVm();
+  @override
+  void initState() {
+    super.initState();
+    viewModel.navigator = this;
+    viewModel.context = context;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           body: Form(
-            key: formKey,
+            key: viewModel.formKey,
             child: Padding(
               padding: const EdgeInsets.all(10),
               child: Column(
@@ -72,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: MediaQuery.of(context).size.height * 0.04,
                       ),
                       CustomTextFormField(
-                          controller: emailController,
+                          controller: viewModel.emailController,
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
                               return "INVALID INPUT";
@@ -85,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       CustomTextFormField(
                           obscureText: true,
-                          controller: passwordController,
+                          controller: viewModel.passwordController,
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
                               return "INVALID INPUT";
@@ -100,7 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      login();
+                      viewModel.login();
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(
@@ -151,50 +153,25 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void login() async {
-    if (formKey.currentState?.validate() == false) {
-      return;
-    }
+  @override
+  void hideLoading() {
+    DialogUtils.hideLoading(context: context);
+  }
+
+  @override
+  void showLoading() {
     DialogUtils.showLoading(
-        context: context, isDismissible: false, actionName: "Loading...");
-    try {
-      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: emailController.text, password: passwordController.text);
+        context: context, actionName: 'Loading ....', isDismissible: false);
+  }
 
-      MyUser? user =
-          await FireBaseUtils.readUserFromFireBase(credential.user!.uid);
-
-      if (user == null) {
-        return;
-      }
-      final provider = Provider.of<SettingsProvider>(context, listen: false);
-      provider.changeLoginStatus();
-      final authProvider = Provider.of<AuthProviders>(context, listen: false);
-      authProvider.changeCurrentUser(user);
-
-      DialogUtils.hideLoading(context: context);
-
-      Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'network-request-failed') {
-        DialogUtils.hideLoading(context: context);
-        DialogUtils.showMessage(
-            isDismissible: false,
-            context: context,
-            title: "Error",
-            negAction: "Cancel",
-            message: 'No Internet Connection');
-      } else {
-        DialogUtils.hideLoading(context: context);
-        DialogUtils.showMessage(
-            isDismissible: false,
-            context: context,
-            title: "Error",
-            negAction: "Cancel",
-            message: 'Incorrect Email or Password');
-      }
-    } catch (e) {
-      print("${e.toString()}=======");
-    }
+  @override
+  void showMessage(String message) {
+    DialogUtils.showMessage(
+      context: context,
+      message: message,
+      isDismissible: false,
+      title: "Error",
+      negAction: "Cancel",
+    );
   }
 }

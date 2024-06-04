@@ -156,7 +156,7 @@ class _TaskEditBoxState extends State<TaskEditBox> {
                     "title": args.title,
                     "description": args.description,
                     "dateTime": args.dateTime
-                  }).timeout(Duration(microseconds: 10), onTimeout: () {
+                  }).timeout(const Duration(microseconds: 10), onTimeout: () {
                     Navigator.pop(context);
                     taskProvider.getAllTasks(authProvider.currentUser!.id);
                     Fluttertoast.showToast(
